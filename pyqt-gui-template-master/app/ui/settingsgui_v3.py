@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import pathlib
+
 
 class Ui_settingsWindow(object):
     def setupUi(self, settingsWindow):
@@ -174,7 +174,7 @@ class Ui_settingsWindow(object):
             QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         self.verticalLayout_2.addWidget(self.listWidget)
-        self.gridLayout_4.addWidget(self.frame_2, 0, 1, 1, 1, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        self.gridLayout_4.addWidget(self.frame_2, 0, 1, 1, 1, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
         self.gridLayout.addWidget(self.groupBox_4, 2, 0, 1, 1)
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
@@ -309,10 +309,7 @@ class Ui_settingsWindow(object):
 
     def retranslateUi(self, settingsWindow):
         _translate = QtCore.QCoreApplication.translate
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("Logo.svg"), QtGui.QIcon.Selected, QtGui.QIcon.On)
-        settingsWindow.setWindowIcon(icon)
-        settingsWindow.setWindowTitle(_translate("settingsWindow", "Settings Menu"))
+        settingsWindow.setWindowTitle(_translate("settingsWindow", "Wave: Settings Menu"))
         self.groupBox_2.setTitle(_translate("settingsWindow", "Settings"))
         self.cancelsettingsPush.setText(_translate("settingsWindow", "Cancel"))
         self.defaultsettingsPush.setText(_translate("settingsWindow", "Save"))
@@ -388,7 +385,7 @@ class Ui_settingsWindow(object):
         processing_epoch = int(self.lineEditProcessEpoch.text())
 
         if self.plotting_enabled.isChecked:
-            epoch_plot = [self.listWidget.item(0), self.listWidget.item(1)]
+            epoch_plot = [self.listWidget.item(0),self.listWidget.item(1)]
             print(epoch_plot)
         else:
             epoch_plot = []

@@ -9,7 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QLabel
+import pathlib
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -23,14 +25,16 @@ class Ui_Dialog(object):
         self.gridLayout.addItem(spacerItem, 0, 3, 1, 1)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem1, 1, 0, 1, 1)
-        self.imageLabel = QtWidgets.QLabel(Dialog)
-        self.imageLabel.setMinimumSize(QtCore.QSize(164, 164))
+        self.imageLabel = QLabel()
+        self.imageLabel.setScaledContents(True)
+        self.imageLabel.setMaximumSize(QtCore.QSize(164, 164))
         self.imageLabel.setObjectName("imageLabel")
         self.gridLayout.addWidget(self.imageLabel, 0, 0, 1, 1)
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setMinimumSize(QtCore.QSize(0, 100))
         self.label.setMaximumSize(QtCore.QSize(16777215, 100))
         self.label.setObjectName("label")
+        self.label.setWordWrap(True)
         self.gridLayout.addWidget(self.label, 1, 2, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem2, 0, 1, 1, 1)
@@ -45,7 +49,12 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Wave: About"))
-        self.imageLabel.setText(_translate("Dialog", "Image Label"))
+        Dialog.setWindowTitle(_translate("Dialog", "About Wave"))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("Logo.svg"), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        Dialog.setWindowIcon(icon)
+        picture = QImage("Logo.png")
+        print(pathlib.Path.cwd())
+        self.imageLabel.setPixmap(QPixmap.fromImage(picture))
         self.label.setText(_translate("Dialog", "<html><head/><body><p>Copyright: Wave is <a href=\"https://github.com/Cobine/Wave/blob/main/LICENSE\"><span style=\" text-decoration: underline; color:#0000ff;\">licensed</span></a> under the GNU General Public Licence v3.0. </p></body></html>"))
         self.textLabel.setText(_translate("Dialog", "<html><head/><body><p>Wave is a standalone library for the processing of waveform accelerometry data from binary AX3 or GENEActiv files to give intensity, and orientation, of monitor statistics at specified time resolutions.</p><p>NIHR Cambridge Biomedical Research Centre – Diet, Anthropometry and Physical Activity Group</p><p><a href=\"https://www.mrc-epid.cam.ac.uk/\"><span style=\" text-decoration: underline; color:#0000ff;\">MRC Epidemiology Unit, Cambridge, UK</span></a></p><p>Version Number: <a href=\"https://github.com/Cobine/Wave/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">XXX</span></a></p><p>Build Date: XXX</p><p><br/></p><p><br/></p></body></html>"))

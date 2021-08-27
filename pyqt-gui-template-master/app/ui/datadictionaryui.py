@@ -1,6 +1,7 @@
 from PyQt5.QtCore import (QDate, QDateTime, QRegExp, QSortFilterProxyModel, Qt,
         QTime)
 from PyQt5.QtGui import QStandardItemModel
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
         QGroupBox, QHBoxLayout, QLabel, QLineEdit, QTreeView, QVBoxLayout,
         QWidget)
@@ -95,7 +96,10 @@ class DataDictionaryWindow(QWidget):
         mainLayout.addWidget(self.proxyGroupBox)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle("Basic Sort/Filter Model")
+        self.setWindowTitle("Data Dictionary")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("Logo.svg"), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.setWindowIcon(icon)
         self.resize(500, 450)
 
         self.proxyView.sortByColumn(VARIABLE, Qt.AscendingOrder)
