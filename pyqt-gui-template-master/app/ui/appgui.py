@@ -462,14 +462,21 @@ class Ui_MainWindow(object):
     def accept(self):
 
         file_list = self.choices
+
         Ui_MainWindow.results_folder = str(self.folder)
+        Ui_MainWindow.indexedRow = self.tableView.rowCount()
+
         for i in file_list:
             process_status = 'Pending'
             row = self.tableView.rowCount()
             self.tableView.insertRow(row)
             self.tableView.setItem(row,0,QtWidgets.QTableWidgetItem(i))
+            item = self.tableView.item(row, 0)
+            item.setTextAlignment(QtCore.Qt.AlignLeft)
             self.tableView.setItem(row,1,QtWidgets.QTableWidgetItem(process_status))
             self.tableView.setItem(row,2,QtWidgets.QTableWidgetItem(Ui_MainWindow.results_folder))
+            item = self.tableView.item(row, 2)
+            item.setTextAlignment(QtCore.Qt.AlignLeft)
 
         Ui_MainWindow.monitor_type = self.buttonGroup.checkedButton().text()
         Ui_MainWindow.pass_table = self.tableView
@@ -494,6 +501,7 @@ class Ui_MainWindow(object):
             self.thread.start()
             self.worker.update_row.connect(self.evt_update_row)
             self.worker.update_progress.connect(self.evt_update_progress)
+            self.worker.update_progress_number.connect(self.evt_update_status_label)
             self.worker.update_error.connect(self.evt_update_error)
             self.worker.finished_check.connect(self.evt_worker_finished)
 
@@ -510,6 +518,7 @@ class Ui_MainWindow(object):
                 self.thread.start()
                 self.worker.update_row.connect(self.evt_update_row)
                 self.worker.update_progress.connect(self.evt_update_progress)
+                self.worker.update_progress_number.connect(self.evt_update_status_label)
                 self.worker.update_error.connect(self.evt_update_error)
                 self.worker.finished_check.connect(self.evt_worker_finished)
 
@@ -518,7 +527,10 @@ class Ui_MainWindow(object):
         self.process_progress = val
         print(self.process_progress)
         self.tableView.setItem(self.process_row, 1, QtWidgets.QTableWidgetItem(self.process_progress))
-        processing_status = "Processing: {} of {}".format(self.process_row+1,Ui_MainWindow.pass_table_count)
+
+    @pyqtSlot(int)
+    def evt_update_status_label(self, count):
+        processing_status = "Processing: {} of {}".format(count, len(self.choices))
         self.statuslabel.setText(processing_status)
 
     @pyqtSlot(int)
@@ -537,7 +549,6 @@ class Ui_MainWindow(object):
             self.thread.exit()
             self.thread.quit()
 
-
     def stop_process(self):
         try:
             hasattr(self.thread, 'isRunning')
@@ -551,6 +562,7 @@ class Ui_MainWindow(object):
                 button = dlg.exec()
                 if button == QMessageBox.Yes:
                     self.thread.quit()
+                    self.thread.exit()
                     self.iterate()
                     processing_status = "Processing: Idle"
                     self.statuslabel.setText(processing_status)
@@ -604,13 +616,12 @@ class Ui_MainWindow(object):
 
 
 
-
-
 class WorkerThread(QThread,Ui_MainWindow):
     update_progress = pyqtSignal(str)
     update_row = pyqtSignal(int)
     update_error = pyqtSignal(str)
     finished_check = pyqtSignal(bool)
+    update_progress_number = pyqtSignal(int)
 
 
     def run(self):
@@ -626,7 +637,7 @@ class WorkerThread(QThread,Ui_MainWindow):
 
         epoch_minutes = [string for string in epoch_minutes if string != ""]
         epoch_minutes = [int(i) for i in epoch_minutes]
-        print(epoch_minutes)
+
 
         ### Finished extraction ###
 
@@ -649,7 +660,7 @@ class WorkerThread(QThread,Ui_MainWindow):
 
         checkStateInput = ", ".join(i.text() for i in checked)
         checkStateOutput = checkStateInput.split(', ')
-        print(checkStateOutput)
+
 
         if 'ENMO' in checkStateOutput:
             stats["ENMO"] = [("generic", ["mean", "n", "missing", "sum"]), ("cutpoints", [[l, 99999] for l in vals])]
@@ -689,10 +700,13 @@ class WorkerThread(QThread,Ui_MainWindow):
 
         results_folder = Ui_MainWindow.results_folder
 
-        for row in range(Ui_MainWindow.pass_table_count):
+        count = 0
+
+        for row in range(Ui_MainWindow.indexedRow,Ui_MainWindow.pass_table_count):
 
             try:
-
+                count = count + 1
+                self.update_progress_number.emit(count)
                 self.update_row.emit(row)
                 self.update_progress.emit('Running')
                 version = "WAP_one_step_process v.1.0 04/10/2019"
