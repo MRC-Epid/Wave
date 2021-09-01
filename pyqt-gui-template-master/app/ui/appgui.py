@@ -22,6 +22,7 @@ from pampro import data_loading, diagnostics, Time_Series, Channel, channel_infe
 from collections import OrderedDict
 import collections, re, copy
 import pandas as pd
+import os.path
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -240,8 +241,7 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 652, 21))
         self.menubar.setObjectName("menubar")
-        menu = self.menuBar()
-        menu.setNativeMenuBar(False)
+        self.menubar.setNativeMenuBar(False)
         self.menuAbout = QtWidgets.QMenu(self.menubar)
         self.menuAbout.setObjectName("menuAbout")
         self.menuView = QtWidgets.QMenu(self.menubar)
@@ -351,13 +351,13 @@ class Ui_MainWindow(object):
 
         self.outputfolderLabel.setText(_translate("MainWindow", "Output Folder:"))
         self.statuslabel.setText(_translate("MainWindow", "Processing: Idle"))
-
         # Tool tips
 
         self.groupBox_4.setToolTip(_translate("MainWindow", "Monitor type"))
         self.groupBox_6.setToolTip(_translate("MainWindow", "Resolution"))
         self.groupBox_5.setToolTip(_translate("MainWindow", "Statistics"))
         self.processStop.setToolTip(_translate("MainWindow", "This will stop all files with status either \'Pending\' or \'Running\'"))
+
 
     def browseSlot( self ):
         #Return to file path list self.files and filetype filetype
@@ -379,8 +379,6 @@ class Ui_MainWindow(object):
         self.listView.setModel(self.model)
 
     def browseFolder(self):
-        #Called when the user presses the Browse button
-        #self.debugPrint( "Browse button pressed" )
         folder_temp = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select output folder:', 'C:\\',
                                                           QtWidgets.QFileDialog.ShowDirsOnly)
         self.outputfolderEntry.setText(folder_temp)
@@ -397,18 +395,24 @@ class Ui_MainWindow(object):
 
     def manualfilesubmit(self):
         textboxValue = self.datafilesEntry.text()
-        QMessageBox.question(self, 'Wave: File Entry', "Files: " + textboxValue, QMessageBox.Ok, QMessageBox.Ok)
-        self.datafilesEntry.setText("")
-        checked = False
-        item = QtGui.QStandardItem(textboxValue)
-        item.setCheckable(True)
-        check = \
-            (QtCore.Qt.Checked if checked else QtCore.Qt.Unchecked)
+        if os.path.isfile(textboxValue) is True:
+            QMessageBox.question(self, 'Wave: File Entry', "Files: " + textboxValue, QMessageBox.Ok, QMessageBox.Ok)
+            self.datafilesEntry.setText("")
+            checked = False
+            item = QtGui.QStandardItem(textboxValue)
+            item.setCheckable(True)
+            check = \
+                (QtCore.Qt.Checked if checked else QtCore.Qt.Unchecked)
 
-        item.setCheckState(check)
-        self.model.appendRow(item)
+            item.setCheckState(check)
+            self.model.appendRow(item)
 
-        self.listView.setModel(self.model)
+            self.listView.setModel(self.model)
+        elif os.path.isfile(textboxValue) is False:
+            self.datafilesEntry.setText("")
+            error = 'Invalid file'
+            detailed_error = 'The filename you have entered is not recognised. Please check to ensure you have entered the filename correctly, including the full path to file.'
+            self.error_message_warning(error, detailed_error)
 
     def open_datadictionaryUI(self):
         #self.window = QtWidgets.QMainWindow()
@@ -470,15 +474,14 @@ class Ui_MainWindow(object):
         Ui_MainWindow.monitor_type = self.buttonGroup.checkedButton().text()
         Ui_MainWindow.pass_table = self.tableView
         Ui_MainWindow.pass_table_count = self.tableView_model.rowCount()
+        Ui_MainWindow.outputresolutionList = self.outputresolutionList
+        Ui_MainWindow.listWidget = self.listWidget
 
         self.process_file()
 
     @pyqtSlot(int)
     def onFinished(self, i):
-        print("Base caught finished, {}".format(i))
         self.thread.quit()
-        print('Tried to quit thread, is the thread still running?')
-        print(self.thread.isRunning())
 
 
     def process_file(self):
@@ -496,7 +499,9 @@ class Ui_MainWindow(object):
 
         elif hasattr(self.thread, 'isRunning') is True:
             if self.thread.isRunning() is True:
-                error_code = 'The application is processing a previous submission. If you wish to '
+                error = 'File submission failed.'
+                error_detailed = 'The application is currently processing a prior submission. If you wish to submit further jobs, either wait until the current process has completed or terminate the process.'
+                self.error_message_information(error,error_detailed)
             elif self.thread.isRunning() is False:
                 self.thread = QThread()
                 self.worker = WorkerThread()
@@ -538,10 +543,11 @@ class Ui_MainWindow(object):
             hasattr(self.thread, 'isRunning')
             if self.thread.isRunning() is True:
                 dlg = QMessageBox(self)
-                dlg.setWindowTitle("I have a question!")
-                dlg.setText("This is a question dialog")
+                dlg.setWindowTitle('Process Interrupt')
+                dlg.setText("Are you sure you want to cancel processing the running jobs?")
                 dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
                 dlg.setIcon(QMessageBox.Question)
+                dlg.setWindowIcon(QtGui.QIcon('Logo.svg'))
                 button = dlg.exec()
                 if button == QMessageBox.Yes:
                     self.thread.quit()
@@ -551,31 +557,35 @@ class Ui_MainWindow(object):
                 else:
                     print("No!")
             elif self.thread.isRunning() is False:
-                self.error = 'No process is currently running.'
-                self.detailed_error = 'You have attempted to execute the threads used for processing accelerometry data. All initialised threads have been completed.'
-                self.error_message()
+                error = 'No process is currently running.'
+                detailed_error = 'You have attempted to execute the threads used for processing accelerometry data. All initialised threads have been completed.'
+                self.error_message_information(error, detailed_error)
 
         except:
-            self.error = 'No process is currently running.'
-            self.detailed_error = 'You have attempted to execute the threads used for processing accelerometry data. No thread has been initialised.'
-            self.error_message()
+            error = 'No process is currently running.'
+            detailed_error = 'You have attempted to execute the threads used for processing accelerometry data. No thread has been initialised.'
+            self.error_message_information(error, detailed_error)
 
-    def error_message_information(self):
+    def error_message_information(self, error, detailed_error):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
-        msg.setText(self.error)
-        msg.setWindowTitle('Wave: Error Message')
+        msg.setWindowIcon(QtGui.QIcon('Logo.svg'))
+        msg.setText(error)
+        msg.setWindowTitle('Error: Warning Message')
         msg.setStandardButtons(QMessageBox.Ok)
-        msg.setDetailedText(self.detailed_error)
+        msg.setDetailedText(detailed_error)
         msg.exec()
 
-    def error_message_warning(self):
+    def error_message_warning(self, error, detailed_error):
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText(self.error)
-        msg.setWindowTitle('Wave: Error Message')
+        msg.setStyleSheet("QLabel{min-width: 100px;}");
+        msg.setStyleSheet("QLabel{min-height: 100px;}");
+        msg.setIcon(QMessageBox.Warning)
+        msg.setWindowIcon(QtGui.QIcon('Logo.svg'))
+        msg.setText(error)
+        msg.setWindowTitle('Error: Warning Message')
         msg.setStandardButtons(QMessageBox.Ok)
-        msg.setDetailedText(self.detailed_error)
+        msg.setDetailedText(detailed_error)
         msg.exec()
 
     def iterate(self):
@@ -592,15 +602,34 @@ class Ui_MainWindow(object):
                 if item == 'Pending' or item == 'Running':
                     self.tableView.setItem(row, column, QtWidgets.QTableWidgetItem('Cancelled'))
 
+
+
+
+
 class WorkerThread(QThread,Ui_MainWindow):
     update_progress = pyqtSignal(str)
     update_row = pyqtSignal(int)
     update_error = pyqtSignal(str)
     finished_check = pyqtSignal(bool)
 
+
     def run(self):
         monitor_type = Ui_MainWindow.monitor_type
-        epoch_minutes = [1, 60]
+
+        ### Extracting the epoch_minutes from the Output Resolution List###
+
+        outputresolution_iterate = Ui_MainWindow.outputresolutionList
+        epoch_minutes = []
+
+        for x in range(outputresolution_iterate.count()):
+            epoch_minutes.append(outputresolution_iterate.item(x).text())
+
+        epoch_minutes = [string for string in epoch_minutes if string != ""]
+        epoch_minutes = [int(i) for i in epoch_minutes]
+        print(epoch_minutes)
+
+        ### Finished extraction ###
+
         epoch_plot = [1]
         processing_epoch = 5
         noise_cutoff_mg = 13
@@ -611,15 +640,40 @@ class WorkerThread(QThread,Ui_MainWindow):
         list5 = list(range(1000, 5000, 1000))  # [1000,99999],[2000,99999]
         vals = list1 + list2 + list3 + list4 + list5  # Collection of all the cutpoints above
         stats = OrderedDict()
-        stats["ENMO"] = [("generic", ["mean", "n", "missing", "sum"]), ("cutpoints", [[l, 99999] for l in vals])]
-        stats["HPFVM"] = [("generic", ["mean", "n", "missing", "sum"]), ("cutpoints", [[l, 99999] for l in vals])]
-        stats["PITCH"] = [("generic", ["mean", "std", "min", "max"]),
-                          ("cutpoints", [[p, p + 5] for p in range(-90, 90, 5)])]
-        stats["ROLL"] = [("generic", ["mean", "std", "min", "max"]),
-                         ("cutpoints", [[p, p + 5] for p in range(-90, 90, 5)])]
-        stats["Temperature"] = [("generic", ["mean"])]
-        stats["Battery"] = [("generic", ["mean"])]
-        stats["Integrity"] = [("generic", ["sum"])]
+
+        checked = []
+        for row in range(Ui_MainWindow.listWidget.count()):
+            item = Ui_MainWindow.listWidget.item(row)
+            if item.checkState():
+                checked.append(item)
+
+        checkStateInput = ", ".join(i.text() for i in checked)
+        checkStateOutput = checkStateInput.split(', ')
+        print(checkStateOutput)
+
+        if 'ENMO' in checkStateOutput:
+            stats["ENMO"] = [("generic", ["mean", "n", "missing", "sum"]), ("cutpoints", [[l, 99999] for l in vals])]
+
+        if 'Pitch' in checkStateOutput:
+            stats["PITCH"] = [("generic", ["mean", "std", "min", "max"]),
+                              ("cutpoints", [[p, p + 5] for p in range(-90, 90, 5)])]
+
+        if 'Roll' in checkStateOutput:
+            stats["ROLL"] = [("generic", ["mean", "std", "min", "max"]),
+                             ("cutpoints", [[p, p + 5] for p in range(-90, 90, 5)])]
+
+        if 'Temperature' in checkStateOutput:
+            stats["Temperature"] = [("generic", ["mean"])]
+
+        if 'Integrity' in checkStateOutput:
+            stats["Integrity"] = [("generic", ["sum"])]
+
+        if 'HPFVM' in checkStateOutput:
+            stats["HPFVM"] = [("generic", ["mean", "n", "missing", "sum"]), ("cutpoints", [[l, 99999] for l in vals])]
+
+        if 'Battery' in checkStateOutput:
+            stats["Battery"] = [("generic", ["mean"])]
+
 
         anomaly_types = ["A", "B", "C", "D", "E", "F", "G"]  # A list of known anomaly types identified by pampro
 

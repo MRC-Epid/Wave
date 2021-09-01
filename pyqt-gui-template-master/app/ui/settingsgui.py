@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 import pathlib
 
 class Ui_settingsWindow(object):
@@ -300,7 +301,7 @@ class Ui_settingsWindow(object):
 
         self.retranslateUi(settingsWindow)
         self.cancelsettingsPush.clicked.connect(settingsWindow.close)
-        self.defaultsettingsPush.clicked.connect(self.default_settings)
+        self.defaultsettingsPush.clicked.connect(self.save_settings)
         self.submitsettingsPush.clicked.connect(self.submit_settings)
         self.submitsettingsPush.clicked.connect(settingsWindow.close)
         self.plotting_disabled.clicked.connect(self.frame_2.hide)
@@ -343,45 +344,8 @@ class Ui_settingsWindow(object):
         self.label_7.setText(_translate("settingsWindow", "Fourth List"))
         self.label_6.setText(_translate("settingsWindow", "Third List"))
 
-    def default_settings(self):
-        self.lineEditNoiseCutoff.setText("13")
-        self.lineEditProcessEpoch.setText("5")
-
-        self.spinBox_10.setProperty("value", 300)
-        self.spinBox.setProperty("value", 1)
-        self.spinBox_13.setProperty("value", 1000)
-        self.spinBox_7.setProperty("value", 150)
-        self.spinBox_15.setProperty("value", 1000)
-        self.spinBox_8.setProperty("value", 300)
-        self.spinBox_14.setProperty("value", 5000)
-        self.spinBox_12.setProperty("value", 100)
-        self.spinBox_4.setProperty("value", 5)
-        self.spinBox_11.setProperty("value", 1000)
-        self.spinBox_9.setProperty("value", 10)
-        self.spinBox_5.setProperty("value", 150)
-        self.spinBox_6.setProperty("value", 5)
-        self.spinBox_3.setProperty("value", 5)
-        self.spinBox_2.setProperty("value", 0)
-
-        self.plotting_enabled.setChecked(True)
-        item = self.listWidget.item(0)
-        item.setText("1")
-        item = self.listWidget.item(1)
-        item.setText("")
-        item = self.listWidget.item(2)
-        item.setText("")
-        item = self.listWidget.item(3)
-        item.setText("")
-        item = self.listWidget.item(4)
-        item.setText("")
-        item = self.listWidget.item(5)
-        item.setText("")
-        item = self.listWidget.item(6)
-        item.setText("")
-        item = self.listWidget.item(7)
-        item.setText("")
-        item = self.listWidget.item(8)
-        item.setText("")
+    def save_settings(self):
+        print('do something')
 
     def submit_settings(self, settingsWindow):
         noise_cutoff = int(self.lineEditNoiseCutoff.text())
@@ -419,6 +383,7 @@ class Ui_settingsWindow(object):
         msg = QMessageBox()
         msg.setWindowTitle("Wave")
         msg.setText("Settings have been successfully submitted.")
-        msg.setIcon(QMessageBox.Question)
+        msg.setWindowIcon(QtGui.QIcon('Logo.svg'))
+        msg.setIcon(QMessageBox.Information)
         msg.setStandardButtons(QMessageBox.Ok)
-        x = msg.exec_()
+        msg.exec_()
