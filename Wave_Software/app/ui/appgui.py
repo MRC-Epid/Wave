@@ -25,9 +25,9 @@ import os.path
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(652, 850)
-        MainWindow.setMinimumSize(QtCore.QSize(650, 850))
-        MainWindow.setMaximumSize(QtCore.QSize(652, 850))
+        MainWindow.resize(650, 600)
+        MainWindow.setMinimumSize(QtCore.QSize(650, 600))
+        MainWindow.setMaximumSize(QtCore.QSize(650, 600))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_8 = QtWidgets.QGridLayout(self.centralwidget)
@@ -358,6 +358,7 @@ class Ui_MainWindow(object):
         self.browseOutputFolderPush.setToolTip(_translate("MainWindow", "Browse location for output folder"))
         self.filelistSubmit.setToolTip(_translate("MainWindow", "Start processing selected files"))
 
+
     def browseSlot( self ):
         #Return to file path list self.files and filetype filetype
         self.files, filetype = QFileDialog.getOpenFileNames(self,
@@ -545,7 +546,7 @@ class Ui_MainWindow(object):
     @pyqtSlot(int)
     def evt_update_row(self, row):
         self.process_row = row
-        print(self.process_row)
+        #print(self.process_row)
 
     def evt_update_error(self, error_code):
         print(error_code)
@@ -622,15 +623,15 @@ class Ui_MainWindow(object):
 
 
 
-class WorkerThread(QThread,Ui_MainWindow):
+class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
     update_progress = pyqtSignal(str)
     update_row = pyqtSignal(int)
     update_error = pyqtSignal(str)
     finished_check = pyqtSignal(bool)
     update_progress_number = pyqtSignal(int)
 
-
     def run(self):
+
         monitor_type = Ui_MainWindow.monitor_type
 
         ### Extracting the epoch_minutes from the Output Resolution List###
@@ -647,16 +648,32 @@ class WorkerThread(QThread,Ui_MainWindow):
 
         ### Finished extraction ###
 
-        epoch_plot = [1]
-        processing_epoch = 5
-        noise_cutoff_mg = 13
-        list1 = list(range(0, 5, 1))  # [0,99999],[1,99999]
-        list2 = list(range(5, 150, 5))  # [5,99999],[10,99999]
-        list3 = list(range(150, 300, 10))  # [100,99999],[110,99999]
-        list4 = list(range(300, 1000, 100))  # [300,99999],[400,99999]
-        list5 = list(range(1000, 5000, 1000))  # [1000,99999],[2000,99999]
-        vals = list1 + list2 + list3 + list4 + list5  # Collection of all the cutpoints above
-        stats = OrderedDict()
+        try:
+            passing_settings = Ui_settingsWindow._output
+            (noise_cutoff_mg, processing_epoch, epoch_plot,
+             list1_increment, list1_start, list1_end,
+             list2_increment, list2_start, list2_end,
+             list3_increment, list3_start, list3_end,
+             list4_increment, list4_start, list4_end,
+             list5_increment, list5_start, list5_end) = passing_settings
+            list1 = list(range(list1_start, list1_end, list1_increment))
+            list2 = list(range(list2_start, list2_end, list2_increment))
+            list3 = list(range(list3_start, list3_end, list3_increment))
+            list4 = list(range(list4_start, list4_end, list4_increment))
+            list5 = list(range(list5_start, list5_end, list5_increment))
+            vals = list1 + list2 + list3 + list4 + list5  # Collection of all the cutpoints above
+            stats = OrderedDict()
+        except:
+            epoch_plot = [1]
+            processing_epoch = 5
+            noise_cutoff_mg = 13
+            list1 = list(range(0, 5, 1))  # [0,99999],[1,99999]
+            list2 = list(range(5, 150, 5))  # [5,99999],[10,99999]
+            list3 = list(range(150, 300, 10))  # [100,99999],[110,99999]
+            list4 = list(range(300, 1000, 100))  # [300,99999],[400,99999]
+            list5 = list(range(1000, 5000, 1000))  # [1000,99999],[2000,99999]
+            vals = list1 + list2 + list3 + list4 + list5  # Collection of all the cutpoints above
+            stats = OrderedDict()
 
         checked = []
         for row in range(Ui_MainWindow.listWidget.count()):
@@ -960,3 +977,4 @@ class WorkerThread(QThread,Ui_MainWindow):
                 self.update_progress.emit('Error')
 
         self.finished_check.emit(True)
+

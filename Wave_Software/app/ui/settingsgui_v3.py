@@ -180,60 +180,32 @@ class Ui_settingsWindow(object):
         self.listWidget.setMaximumSize(QtCore.QSize(200, 16777215))
         self.listWidget.setObjectName("listWidget")
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         item = QtWidgets.QListWidgetItem()
-        item.setFlags(
-            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         self.verticalLayout_2.addWidget(self.listWidget)
         self.gridLayout_4.addWidget(self.frame_2, 0, 1, 1, 1, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)

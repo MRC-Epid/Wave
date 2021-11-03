@@ -10,14 +10,16 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
-
+from PyQt5.QtCore import QSettings, pyqtSignal
 
 class Ui_settingsWindow(object):
+
     def setupUi(self, settingsWindow):
+        super(Ui_settingsWindow, self).__init__()
         settingsWindow.setObjectName("settingsWindow")
-        settingsWindow.resize(650, 750)
-        settingsWindow.setMinimumSize(QtCore.QSize(650, 750))
-        settingsWindow.setMaximumSize(QtCore.QSize(650, 800))
+        settingsWindow.resize(650, 730)
+        settingsWindow.setMinimumSize(QtCore.QSize(650, 730))
+        settingsWindow.setMaximumSize(QtCore.QSize(650, 730))
         self.centralwidget = QtWidgets.QWidget(settingsWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
@@ -308,14 +310,19 @@ class Ui_settingsWindow(object):
         self.cancelsettingsPush.clicked.connect(settingsWindow.close)
         self.defaultsettingsPush.clicked.connect(self.save_settings)
         self.submitsettingsPush.clicked.connect(self.submit_settings)
+        self.submitsettingsPush.clicked.connect(self.submit_settings_popup)
         self.submitsettingsPush.clicked.connect(settingsWindow.close)
         self.plotting_disabled.clicked.connect(self.frame_2.hide)
         self.plotting_enabled.clicked.connect(self.frame_2.show)
         QtCore.QMetaObject.connectSlotsByName(settingsWindow)
 
+
     def retranslateUi(self, settingsWindow):
         _translate = QtCore.QCoreApplication.translate
         settingsWindow.setWindowTitle(_translate("settingsWindow", "Wave: Settings Menu"))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("Logo.svg"), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        settingsWindow.setWindowIcon(icon)
         self.groupBox_2.setTitle(_translate("settingsWindow", "Advanced Settings"))
         self.groupBox.setTitle(_translate("settingsWindow", "Thresholds"))
         self.label_2.setText(_translate("settingsWindow", "Last Section Point"))
@@ -347,41 +354,51 @@ class Ui_settingsWindow(object):
         self.plotting_disabled.clicked.connect(self.frame_2.hide)
         self.plotting_enabled.clicked.connect(self.frame_2.show)
         QtCore.QMetaObject.connectSlotsByName(settingsWindow)
+        self.defining_settings()
+        self.load_settings()
+        self.comboBox.currentIndexChanged.connect(self.update_settings)
 
-    def save_settings(self):
-        pass
 
-    def submit_settings(self, settingsWindow):
-        noise_cutoff = int(self.lineEditNoiseCutoff.text())
-        processing_epoch = int(self.lineEditProcessEpoch.text())
+    def submit_settings(self):
 
-        if self.plotting_enabled.isChecked:
-            epoch_plot = [self.listWidget.item(0), self.listWidget.item(1)]
-            print(epoch_plot)
-        else:
+        Ui_settingsWindow.noise_cutoff_mg = int(self.lineEditNoiseCutoff.text())
+        Ui_settingsWindow.processing_epoch = int(self.lineEditProcessEpoch.text())
+
+        if self.plotting_enabled.isChecked():
+            epoch_plot = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
+            epoch_plot = list(filter(None, epoch_plot))
+            epoch_plot = ([int(x) for x in epoch_plot])
+        elif self.plotting_disabled.isChecked():
             epoch_plot = []
 
-        list1_increment = self.spinBox.value()
-        list1_start = self.spinBox_2.value()
-        list1_end = self.spinBox_3.value()
+        Ui_settingsWindow.epoch_plot = epoch_plot
 
-        list2_increment = self.spinBox_6.value()
-        list2_start = self.spinBox_4.value()
-        list2_end = self.spinBox_5.value()
+        Ui_settingsWindow.list1_increment = self.spinBox.value()
+        Ui_settingsWindow.list1_start = self.spinBox_2.value()
+        Ui_settingsWindow.list1_end = self.spinBox_3.value()
 
-        list3_increment = self.spinBox_9.value()
-        list3_start = self.spinBox_7.value()
-        list3_end = self.spinBox_8.value()
+        Ui_settingsWindow.list2_increment = self.spinBox_6.value()
+        Ui_settingsWindow.list2_start = self.spinBox_4.value()
+        Ui_settingsWindow.list2_end = self.spinBox_5.value()
 
-        list4_increment = self.spinBox_12.value()
-        list4_start = self.spinBox_10.value()
-        list4_end = self.spinBox_11.value()
+        Ui_settingsWindow.list3_increment = self.spinBox_9.value()
+        Ui_settingsWindow.list3_start = self.spinBox_7.value()
+        Ui_settingsWindow.list3_end = self.spinBox_8.value()
 
-        list5_increment = self.spinBox_15.value()
-        list5_start = self.spinBox_13.value()
-        list5_end = self.spinBox_14.value()
+        Ui_settingsWindow.list4_increment = self.spinBox_12.value()
+        Ui_settingsWindow.list4_start = self.spinBox_10.value()
+        Ui_settingsWindow.list4_end = self.spinBox_11.value()
 
-        self.submit_settings_popup()
+        Ui_settingsWindow.list5_increment = self.spinBox_15.value()
+        Ui_settingsWindow.list5_start = self.spinBox_13.value()
+        Ui_settingsWindow.list5_end = self.spinBox_14.value()
+
+        Ui_settingsWindow._output = (Ui_settingsWindow.noise_cutoff_mg, Ui_settingsWindow.processing_epoch, Ui_settingsWindow.epoch_plot,
+                        Ui_settingsWindow.list1_increment, Ui_settingsWindow.list1_start, Ui_settingsWindow.list1_end,
+                        Ui_settingsWindow.list2_increment, Ui_settingsWindow.list2_start, Ui_settingsWindow.list2_end,
+                        Ui_settingsWindow.list3_increment, Ui_settingsWindow.list3_start, Ui_settingsWindow.list3_end,
+                        Ui_settingsWindow.list4_increment, Ui_settingsWindow.list4_start, Ui_settingsWindow.list4_end,
+                        Ui_settingsWindow.list5_increment, Ui_settingsWindow.list5_start, Ui_settingsWindow.list5_end)
 
     def submit_settings_popup(self):
         msg = QMessageBox()
@@ -391,3 +408,94 @@ class Ui_settingsWindow(object):
         msg.setIcon(QMessageBox.Information)
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
+
+
+    def load_settings(self):
+        '''
+        if self.settings.contains('Default'):
+            # there is the key in QSettings
+            print('Checking for default panel_name in config')
+            panel_name = settings.value('panel_name')
+            print('Found panel_name in config:' + str(panel_name))
+        else:
+            print('panel_name not found in config. Using default: Cyberpanel')
+            settings.setValue('panel_name', 'cyberpanel')
+            panel_name = str(settings.value('panel_name'))
+            pass
+        '''
+
+        child_groups_exist = self.settings.childGroups();
+        if child_groups_exist:
+            self.comboBox.clear()
+            self.comboBox.addItems(child_groups_exist)
+        else:
+            pass
+
+
+    def save_settings(self):
+        ### Save the settings if the user accepts the settings dialog. ###
+
+        settings_name = str(self.comboBox.currentText())
+        self.settings.beginGroup(settings_name)
+        self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
+        self.settings.setValue('Processing_Epoch', self.lineEditProcessEpoch.text())
+        self.settings.setValue('list1_increment', self.spinBox.value())
+        self.settings.setValue('list1_start', self.spinBox_2.value())
+        self.settings.setValue('list1_end', self.spinBox_3.value())
+        self.settings.setValue('list2_increment', self.spinBox_6.value())
+        self.settings.setValue('list2_start', self.spinBox_4.value())
+        self.settings.setValue('list2_end', self.spinBox_5.value())
+        self.settings.setValue('list3_increment', self.spinBox_9.value())
+        self.settings.setValue('list3_start', self.spinBox_7.value())
+        self.settings.setValue('list3_end', self.spinBox_8.value())
+        self.settings.setValue('list4_increment', self.spinBox_12.value())
+        self.settings.setValue('list4_start', self.spinBox_10.value())
+        self.settings.setValue('list4_end', self.spinBox_11.value())
+        self.settings.setValue('list5_increment', self.spinBox_15.value())
+        self.settings.setValue('list5_start', self.spinBox_13.value())
+        self.settings.setValue('list5_end', self.spinBox_14.value())
+        self.settings.endGroup()
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Wave")
+        msg.setText("Settings: " + str(settings_name) + " has been saved.")
+        msg.setWindowIcon(QtGui.QIcon('Logo.svg'))
+        msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
+
+    def defining_settings(self):
+        ### Define QSettings ###
+        #settings_name = str(self.comboBox.currentText())
+        self.settings = QSettings('Wave', 'Settings')
+
+        #self.settings = QSettings()
+        ### End ###
+
+    def update_settings(self):
+        settings_name = str(self.comboBox.currentText())
+        child_groups_exist = self.settings.childGroups()
+
+        if settings_name in child_groups_exist:
+            self.settings.beginGroup(settings_name)
+            self.lineEditNoiseCutoff.setText(str(self.settings.value('NoiseCutoff')))
+            self.lineEditProcessEpoch.setText(str(self.settings.value('Processing_Epoch')))
+            self.spinBox.setValue(int(self.settings.value('list1_increment')))
+            self.spinBox_2.setValue(int(self.settings.value('list1_start')))
+            self.spinBox_3.setValue(int(self.settings.value('list1_end')))
+            self.spinBox_6.setValue(int(self.settings.value('list2_increment')))
+            self.spinBox_4.setValue(int(self.settings.value('list2_start')))
+            self.spinBox_5.setValue(int(self.settings.value('list2_end')))
+            self.spinBox_9.setValue(int(self.settings.value('list3_increment')))
+            self.spinBox_7.setValue(int(self.settings.value('list3_start')))
+            self.spinBox_8.setValue(int(self.settings.value('list3_end')))
+            self.spinBox_12.setValue(int(self.settings.value('list4_increment')))
+            self.spinBox_10.setValue(int(self.settings.value('list4_start')))
+            self.spinBox_11.setValue(int(self.settings.value('list4_end')))
+            self.spinBox_15.setValue(int(self.settings.value('list5_increment')))
+            self.spinBox_13.setValue(int(self.settings.value('list5_start')))
+            self.spinBox_14.setValue(int(self.settings.value('list5_end')))
+            self.settings.endGroup()
+        else:
+            pass
