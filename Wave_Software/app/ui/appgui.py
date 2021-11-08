@@ -7,7 +7,7 @@
 
 from PyQt5.QtCore import *
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QApplication
 from .settingsgui import Ui_settingsWindow
 from .datadictionaryui import DataDictionaryWindow, createDictionaryModel, addDictionary
 from .aboutgui import Ui_Dialog
@@ -24,6 +24,7 @@ import os.path
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        super(Ui_MainWindow, self).__init__()
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(650, 600)
         MainWindow.setMinimumSize(QtCore.QSize(650, 600))
@@ -349,6 +350,7 @@ class Ui_MainWindow(object):
 
         self.outputfolderLabel.setText(_translate("MainWindow", "Output Folder:"))
         self.statuslabel.setText(_translate("MainWindow", "Processing: Idle"))
+        #self.statusbar.showMessage('Advanced Settings Template: Default')
         # Tool tips
 
         self.groupBox_6.setToolTip(_translate("MainWindow", "The output level is given in minutes, where multiple levels can be selected. Click to add or remove levels."))
@@ -498,7 +500,6 @@ class Ui_MainWindow(object):
     def onFinished(self, i):
         self.thread.quit()
 
-
     def process_file(self):
 
         if hasattr(self.thread, 'isRunning') is False:
@@ -535,7 +536,6 @@ class Ui_MainWindow(object):
     @pyqtSlot(str)
     def evt_update_progress(self, val):
         self.process_progress = val
-        print(self.process_progress)
         self.tableView.setItem(self.process_row, 1, QtWidgets.QTableWidgetItem(self.process_progress))
 
     @pyqtSlot(int)
@@ -649,6 +649,7 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
         ### Finished extraction ###
 
         try:
+            print('using submitted settings')
             passing_settings = Ui_settingsWindow._output
             (noise_cutoff_mg, processing_epoch, epoch_plot,
              list1_increment, list1_start, list1_end,
@@ -664,6 +665,7 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
             vals = list1 + list2 + list3 + list4 + list5  # Collection of all the cutpoints above
             stats = OrderedDict()
         except:
+            print('using default')
             epoch_plot = [1]
             processing_epoch = 5
             noise_cutoff_mg = 13
