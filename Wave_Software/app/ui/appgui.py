@@ -24,7 +24,6 @@ import os.path
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        super(Ui_MainWindow, self).__init__()
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(650, 600)
         MainWindow.setMinimumSize(QtCore.QSize(650, 600))

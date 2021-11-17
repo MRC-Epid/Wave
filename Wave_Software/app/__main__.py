@@ -4,8 +4,7 @@ import traceback
 
 from PyQt5.QtWidgets import QApplication, QLabel, QSplashScreen, QProgressBar
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap, QIcon
-import os
+from PyQt5.QtGui import QPixmap
 
 from .gui import MainWindow
 
@@ -28,7 +27,6 @@ def main():
 
     splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
     splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
-    splash.setWindowIcon(QIcon('Logo.svg'))
     splash.setEnabled(False)
     # splash = QSplashScreen(splash_pix)
     # adding progress bar
@@ -53,7 +51,6 @@ def main():
     known_args = parser.parse_known_args()[0]
 
     qapp = QApplication(sys.argv)
-    qapp.setWindowIcon(QIcon('Logo.svg'))
     gui = MainWindow(**vars(known_args))
     gui.show()
     splash.finish(gui)

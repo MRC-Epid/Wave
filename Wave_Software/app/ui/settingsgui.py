@@ -11,11 +11,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton
 from PyQt5.QtCore import QSettings, pyqtSignal, QObject
+import itertools
+
 
 class Ui_settingsWindow(object):
 
     def setupUi(self, settingsWindow):
-        super(Ui_settingsWindow, self).__init__()
         settingsWindow.setObjectName("settingsWindow")
         settingsWindow.resize(650, 705)
         settingsWindow.setMinimumSize(QtCore.QSize(650, 705))
@@ -608,6 +609,16 @@ class Ui_settingsWindow(object):
             self.settings.beginGroup(settings_name)
             self.listWidget.clear()
             self.listWidget.addItems(self.settings.value('Epoch_plot'))
+            for index in range(self.listWidget.count()):
+                item = self.listWidget.item(index)
+                item.setFlags(QtCore.Qt.ItemIsEditable |
+                              QtCore.Qt.ItemIsEnabled |
+                              QtCore.Qt.ItemIsSelectable)
+            for _ in itertools.repeat(None, 5):
+                item = QtWidgets.QListWidgetItem()
+                item.setFlags(
+                    QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                self.listWidget.addItem(item)
             self.lineEditNoiseCutoff.setText(str(self.settings.value('NoiseCutoff')))
             self.lineEditProcessEpoch.setText(str(self.settings.value('Processing_Epoch')))
             self.spinBox.setValue(int(self.settings.value('list1_increment')))
