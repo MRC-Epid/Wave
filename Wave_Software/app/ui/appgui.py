@@ -348,7 +348,7 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
 
         self.outputfolderLabel.setText(_translate("MainWindow", "Output Folder:"))
-        self.statuslabel.setText(_translate("MainWindow", "Processing: Idle"))
+        self.statuslabel.setText(_translate("MainWindow", "Status: Not Processing"))
         #self.statusbar.showMessage('Advanced Settings Template: Default')
         # Tool tips
 
@@ -539,7 +539,7 @@ class Ui_MainWindow(object):
 
     @pyqtSlot(int)
     def evt_update_status_label(self, count):
-        processing_status = "Processing: {} of {}".format(count, len(self.choices))
+        processing_status = "Status: Processing {} of {}".format(count, len(self.choices))
         self.statuslabel.setText(processing_status)
 
     @pyqtSlot(int)
@@ -553,7 +553,7 @@ class Ui_MainWindow(object):
     @pyqtSlot(bool)
     def evt_worker_finished(self, status):
         if status is True:
-            processing_status = "Processing: Idle"
+            processing_status = "Status: Not Processing"
             self.statuslabel.setText(processing_status)
             self.thread.exit()
             self.thread.quit()
@@ -573,7 +573,7 @@ class Ui_MainWindow(object):
                     self.thread.quit()
                     self.thread.exit()
                     self.iterate()
-                    processing_status = "Processing: Idle"
+                    processing_status = "Status: Not Processing"
                     self.statuslabel.setText(processing_status)
                 else:
                     print("No!")
