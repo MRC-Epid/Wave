@@ -349,7 +349,7 @@ class Ui_MainWindow(object):
 
         self.outputfolderLabel.setText(_translate("MainWindow", "Output Folder:"))
         self.statuslabel.setText(_translate("MainWindow", "Status: Not Processing"))
-        #self.statusbar.showMessage('Advanced Settings Template: Default')
+        self.statusbar.showMessage('Advanced Settings Template: Default')
         # Tool tips
 
         self.groupBox_6.setToolTip(_translate("MainWindow", "The output level is given in minutes, where multiple levels can be selected. Click to add or remove levels."))
@@ -628,6 +628,7 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
     update_error = pyqtSignal(str)
     finished_check = pyqtSignal(bool)
     update_progress_number = pyqtSignal(int)
+
 
     def run(self):
 
@@ -978,4 +979,3 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
                 self.update_progress.emit('Error')
 
         self.finished_check.emit(True)
-
