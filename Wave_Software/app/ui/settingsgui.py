@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton
 from PyQt5.QtCore import QSettings, pyqtSignal, QObject
+from PyQt5.QtGui import QIntValidator
 import itertools
 
 
@@ -369,6 +370,9 @@ class Ui_settingsWindow(object):
         self.processingepochLabel.setText(_translate("settingsWindow", "Processing Epoch (sec)"))
         self.lineEditProcessEpoch.setText(_translate("settingsWindow", "5"))
         self.noisecutoffLabel.setText(_translate("settingsWindow", "Noise Cutoff (mg)"))
+        self.onlyInt = QIntValidator()
+        self.lineEditNoiseCutoff.setValidator(self.onlyInt)
+        self.lineEditProcessEpoch.setValidator(self.onlyInt)
         self.lineEditNoiseCutoff.setText(_translate("settingsWindow", "13"))
         self.cancelsettingsPush.setText(_translate("settingsWindow", "Close"))
         self.defaultsettingsPush.setText(_translate("settingsWindow", "Save"))
