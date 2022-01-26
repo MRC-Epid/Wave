@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSettings
 
 
 class SettingsManager:
-    """Create a settings manager to handle all SuperChess settings."""
+    """Create a settings manager to handle all settings."""
     widget_mappers = {"QCheckBox": ("isChecked", "setChecked", bool),
                       "QRadioButton": ("isChecked", "setChecked", bool)}
 
