@@ -719,7 +719,7 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
 
         anomaly_types = ["A", "B", "C", "D", "E", "F", "G"]  # A list of known anomaly types identified by pampro
 
-        GA_battery_max = 4.3  # maximum value of GeneActiv battery, used to find percentage ccdharged
+        GA_battery_max = 4.3  # maximum value of GeneActiv battery, used to find percentage charged
         AX_battery_max = 210  # maximum value of Axivity battery, used to find percentage charged
 
         plotting_dict = {"ENMO_sum": "{}_{}_ENMO_sum.png",
