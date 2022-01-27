@@ -410,6 +410,7 @@ class Ui_settingsWindow(object):
             epoch_plot = [1]
             self.settings.beginGroup(name_check)
             self.settings.setValue('Epoch_plot', epoch_plot)
+            self.settings.setValue('Epoch_plot_list', epoch_plot_list)
             self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
             self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
             self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
@@ -629,6 +630,7 @@ class Ui_settingsWindow(object):
             epoch_plot = [1]
             self.settings.beginGroup(settings_name)
             self.settings.setValue('Epoch_plot', epoch_plot)
+            self.settings.setValue('Epoch_plot_list', epoch_plot)
             self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
             self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
             self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
@@ -659,6 +661,11 @@ class Ui_settingsWindow(object):
         ### Save the settings if the user accepts the settings dialog. ###
 
         settings_name = str(self.comboBox.currentText())
+
+        epoch_plot_list = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
+        epoch_plot_list = list(filter(None, epoch_plot_list))
+        epoch_plot_list = ([int(x) for x in epoch_plot_list])
+
         if self.plotting_enabled.isChecked():
             epoch_plot = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
             epoch_plot = list(filter(None, epoch_plot))
@@ -668,6 +675,7 @@ class Ui_settingsWindow(object):
 
         self.settings.beginGroup(settings_name)
         self.settings.setValue('Epoch_plot', epoch_plot)
+        self.settings.setValue('Epoch_plot_list', epoch_plot_list)
         self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
         self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
         self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
@@ -762,7 +770,7 @@ class Ui_settingsWindow(object):
         if settings_name in child_groups_exist:
             self.settings.beginGroup(settings_name)
             self.listWidget.clear()
-            self.listWidget.addItems(self.settings.value('Epoch_plot'))
+            self.listWidget.addItems(self.settings.value('Epoch_plot_list'))
             for index in range(self.listWidget.count()):
                 item = self.listWidget.item(index)
                 item.setFlags(QtCore.Qt.ItemIsEditable |
