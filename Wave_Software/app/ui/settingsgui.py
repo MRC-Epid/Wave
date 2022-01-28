@@ -410,7 +410,7 @@ class Ui_settingsWindow(object):
             epoch_plot = [1]
             self.settings.beginGroup(name_check)
             self.settings.setValue('Epoch_plot', epoch_plot)
-            self.settings.setValue('Epoch_plot_list', epoch_plot_list)
+            self.settings.setValue('Epoch_plot_list', epoch_plot)
             self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
             self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
             self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())

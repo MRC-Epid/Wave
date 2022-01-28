@@ -364,7 +364,15 @@ class Ui_MainWindow(object):
         self.browseFilesPush.setToolTip(_translate("MainWindow", "Browse location for data files"))
         self.browseOutputFolderPush.setToolTip(_translate("MainWindow", "Browse location for output folder"))
         self.filelistSubmit.setToolTip(_translate("MainWindow", "Start processing selected files"))
+        self.defining_settings()
 
+    def defining_settings(self):
+        ### Define QSettings ###
+        #settings_name = str(self.comboBox.currentText())
+        self.settings = QSettings('Wave', 'Settings')
+
+        #self.settings = QSettings()
+        ### End ###
 
     def browseSlot( self ):
         #Return to file path list self.files and filetype filetype
@@ -966,6 +974,7 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
                 header["processing_epoch"] = processing_epoch
                 header["QC_first_battery_pct"] = first_battery_pct
                 header["QC_last_battery_pct"] = last_battery_pct
+                header["Template"] = self.settings.value('Template')
 
                 metadata = {**header, **anomalies_dict, **cal_diagnostics}
 
