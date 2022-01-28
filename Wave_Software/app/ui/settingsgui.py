@@ -572,7 +572,7 @@ class Ui_settingsWindow(object):
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
             msgBox.setWindowIcon(QtGui.QIcon('Logo.svg'))
-            msgBox.setText("The settings do not much those of the template. Please update the template and try again.")
+            msgBox.setText("The settings do not much those of the template. Please save the template and try again.")
             msgBox.setWindowTitle("Wave")
             msgBox.setStandardButtons(QMessageBox.Ok)
             msgBox.exec()

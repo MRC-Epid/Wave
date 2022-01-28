@@ -355,7 +355,7 @@ class Ui_MainWindow(object):
 
         self.outputfolderLabel.setText(_translate("MainWindow", "Output Folder:"))
         self.statuslabel.setText(_translate("MainWindow", "Status: Not Processing"))
-        self.statusbar.showMessage('Advanced Settings Template: Default')
+        #self.statusbar.showMessage('Advanced Settings Template: Default')
         # Tool tips
 
         self.groupBox_6.setToolTip(_translate("MainWindow", "The output level is given in minutes, where multiple levels can be selected. Click to add or remove levels."))

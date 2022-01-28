@@ -612,6 +612,7 @@ def createDictionaryModel(parent):
     addDictionary(model, "HPFVM_4000_99999", "0",
                   "Count of number of epochs above HPFVM 4000mg. To convert to minutes use equation: Variable/(60/processing epoch)")
     addDictionary(model, "Battery_mean", "197.732170598663", "Mean Battery for the given timeframe")
+    addDictionary(model, "Template", 'Default', 'Name of template used in the Settings menu')
 
     return model
 
