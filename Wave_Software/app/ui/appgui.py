@@ -370,6 +370,7 @@ class Ui_MainWindow(object):
         ### Define QSettings ###
         #settings_name = str(self.comboBox.currentText())
         self.settings = QSettings('Wave', 'Settings')
+        self.settings.setValue('Template', 'Default')
 
         #self.settings = QSettings()
         ### End ###
@@ -643,8 +644,18 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
     finished_check = pyqtSignal(bool)
     update_progress_number = pyqtSignal(int)
 
+    def defining_settings(self):
+        ### Define QSettings ###
+        #settings_name = str(self.comboBox.currentText())
+        self.settings = QSettings('Wave', 'Settings')
+
+        #self.settings = QSettings()
+        ### End ###
+
 
     def run(self):
+
+        self.defining_settings()
 
         monitor_type = Ui_MainWindow.monitor_type
 
@@ -974,7 +985,8 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
                 header["processing_epoch"] = processing_epoch
                 header["QC_first_battery_pct"] = first_battery_pct
                 header["QC_last_battery_pct"] = last_battery_pct
-                header["Template"] = self.settings.value('Template')
+                new_key_values_dict = {'Template': self.settings.value('Template')}
+                header.update(new_key_values_dict)
 
                 metadata = {**header, **anomalies_dict, **cal_diagnostics}
 
@@ -994,3 +1006,4 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
                 self.update_progress.emit('Error')
 
         self.finished_check.emit(True)
+
