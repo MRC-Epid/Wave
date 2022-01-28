@@ -566,9 +566,7 @@ class Ui_settingsWindow(object):
                             Ui_settingsWindow.list5_increment, Ui_settingsWindow.list5_start, Ui_settingsWindow.list5_end)
 
             Ui_settingsWindow.template_name = str(self.comboBox.currentText())
-            self.settings.beginGroup('Template')
             self.settings.setValue('Template', settings_name)
-            self.settings.endGroup()
             self.submit_settings_popup()
         elif submit_dictionary != saved_dictionary:
             msgBox = QMessageBox()
@@ -622,9 +620,7 @@ class Ui_settingsWindow(object):
             if index >= 0:
                 self.comboBox.setCurrentIndex(index)
             self.update_settings()
-            self.settings.beginGroup('Template')
             self.settings.setValue('Template', 'Default')
-            self.settings.endGroup()
         else:
             settings_name = 'Default'
             epoch_plot = [1]
@@ -652,9 +648,7 @@ class Ui_settingsWindow(object):
             self.settings.setValue('list5_end', self.spinBox_14.value())
             self.settings.endGroup()
             self.toggle_edit()
-            self.settings.beginGroup('Template')
             self.settings.setValue('Template', 'Default')
-            self.settings.endGroup()
 
 
     def save_settings(self):
