@@ -297,7 +297,10 @@ class Ui_MainWindow(object):
         self.groupBox_3.setTitle(_translate("MainWindow", "Processing"))
         self.filelistSelectAll.setText(_translate("MainWindow", "Select all"))
         self.filelistClearSelection.setText(_translate("MainWindow", "Clear selection"))
-        self.filelistSubmit.setText(_translate("MainWindow", "Submit"))
+        self.filelistSubmit.setText(_translate("MainWindow", "  Run"))
+        self.filelistSubmit.setIcon(QtGui.QIcon('Run.png'))
+        iconSize = QSize(20,20)
+        self.filelistSubmit.setIconSize(iconSize)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.datalistTab), _translate("MainWindow", "Data"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Status"))
         self.groupBox.setTitle(_translate("MainWindow", "Files"))
@@ -307,7 +310,10 @@ class Ui_MainWindow(object):
         self.outputfolderlabel.setText(_translate("MainWindow", "Output Folder:"))
         self.outputfoldersubmit.setText(_translate("MainWindow", "Submit"))
         self.datafilesubmit.setText(_translate("MainWindow", "Submit"))
-        self.processStop.setText(_translate("MainWindow", "Stop"))
+        self.processStop.setText(_translate("MainWindow", "  Stop"))
+        self.processStop.setIcon(QtGui.QIcon('Cancel.png'))
+        iconSize = QSize(20,20)
+        self.processStop.setIconSize(iconSize)
         self.groupBox_2.setTitle(_translate("MainWindow", "Output Settings"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Monitor Type"))
         self.axivityRadioButton.setText(_translate("MainWindow", "Axivity"))
@@ -348,7 +354,7 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
 
         self.outputfolderLabel.setText(_translate("MainWindow", "Output Folder:"))
-        self.statuslabel.setText(_translate("MainWindow", "Processing: Idle"))
+        self.statuslabel.setText(_translate("MainWindow", "Status: Not Processing"))
         #self.statusbar.showMessage('Advanced Settings Template: Default')
         # Tool tips
 
@@ -358,7 +364,16 @@ class Ui_MainWindow(object):
         self.browseFilesPush.setToolTip(_translate("MainWindow", "Browse location for data files"))
         self.browseOutputFolderPush.setToolTip(_translate("MainWindow", "Browse location for output folder"))
         self.filelistSubmit.setToolTip(_translate("MainWindow", "Start processing selected files"))
+        self.defining_settings()
 
+    def defining_settings(self):
+        ### Define QSettings ###
+        #settings_name = str(self.comboBox.currentText())
+        self.settings = QSettings('Wave', 'Settings')
+        self.settings.setValue('Template', 'Default')
+
+        #self.settings = QSettings()
+        ### End ###
 
     def browseSlot( self ):
         #Return to file path list self.files and filetype filetype
@@ -539,7 +554,7 @@ class Ui_MainWindow(object):
 
     @pyqtSlot(int)
     def evt_update_status_label(self, count):
-        processing_status = "Processing: {} of {}".format(count, len(self.choices))
+        processing_status = "Status: Processing {} of {}".format(count, len(self.choices))
         self.statuslabel.setText(processing_status)
 
     @pyqtSlot(int)
@@ -553,7 +568,7 @@ class Ui_MainWindow(object):
     @pyqtSlot(bool)
     def evt_worker_finished(self, status):
         if status is True:
-            processing_status = "Processing: Idle"
+            processing_status = "Status: Not Processing"
             self.statuslabel.setText(processing_status)
             self.thread.exit()
             self.thread.quit()
@@ -573,7 +588,7 @@ class Ui_MainWindow(object):
                     self.thread.quit()
                     self.thread.exit()
                     self.iterate()
-                    processing_status = "Processing: Idle"
+                    processing_status = "Status: Not Processing"
                     self.statuslabel.setText(processing_status)
                 else:
                     print("No!")
@@ -629,7 +644,18 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
     finished_check = pyqtSignal(bool)
     update_progress_number = pyqtSignal(int)
 
+    def defining_settings(self):
+        ### Define QSettings ###
+        #settings_name = str(self.comboBox.currentText())
+        self.settings = QSettings('Wave', 'Settings')
+
+        #self.settings = QSettings()
+        ### End ###
+
+
     def run(self):
+
+        self.defining_settings()
 
         monitor_type = Ui_MainWindow.monitor_type
 
@@ -712,7 +738,7 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
 
         anomaly_types = ["A", "B", "C", "D", "E", "F", "G"]  # A list of known anomaly types identified by pampro
 
-        GA_battery_max = 4.3  # maximum value of GeneActiv battery, used to find percentage ccdharged
+        GA_battery_max = 4.3  # maximum value of GeneActiv battery, used to find percentage charged
         AX_battery_max = 210  # maximum value of Axivity battery, used to find percentage charged
 
         plotting_dict = {"ENMO_sum": "{}_{}_ENMO_sum.png",
@@ -959,6 +985,8 @@ class WorkerThread(QThread,Ui_MainWindow, Ui_settingsWindow):
                 header["processing_epoch"] = processing_epoch
                 header["QC_first_battery_pct"] = first_battery_pct
                 header["QC_last_battery_pct"] = last_battery_pct
+                new_key_values_dict = {'Template': self.settings.value('Template')}
+                header.update(new_key_values_dict)
 
                 metadata = {**header, **anomalies_dict, **cal_diagnostics}
 

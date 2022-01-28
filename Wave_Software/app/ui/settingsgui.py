@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton
 from PyQt5.QtCore import QSettings, pyqtSignal, QObject
+from PyQt5.QtGui import QIntValidator
 import itertools
 
 
@@ -331,8 +332,6 @@ class Ui_settingsWindow(object):
         self.removeTemplatePushButton.clicked.connect(self.remove_template)
         self.defaultsettingsPush.clicked.connect(self.save_settings)
         self.submitsettingsPush.clicked.connect(self.submit_settings)
-        self.submitsettingsPush.clicked.connect(self.submit_settings_popup)
-        self.submitsettingsPush.clicked.connect(settingsWindow.close)
         self.plotting_disabled.clicked.connect(self.frame_2.hide)
         self.plotting_enabled.clicked.connect(self.frame_2.show)
         QtCore.QMetaObject.connectSlotsByName(settingsWindow)
@@ -371,8 +370,11 @@ class Ui_settingsWindow(object):
         self.processingepochLabel.setText(_translate("settingsWindow", "Processing Epoch (sec)"))
         self.lineEditProcessEpoch.setText(_translate("settingsWindow", "5"))
         self.noisecutoffLabel.setText(_translate("settingsWindow", "Noise Cutoff (mg)"))
+        self.onlyInt = QIntValidator()
+        self.lineEditNoiseCutoff.setValidator(self.onlyInt)
+        self.lineEditProcessEpoch.setValidator(self.onlyInt)
         self.lineEditNoiseCutoff.setText(_translate("settingsWindow", "13"))
-        self.cancelsettingsPush.setText(_translate("settingsWindow", "Cancel"))
+        self.cancelsettingsPush.setText(_translate("settingsWindow", "Close"))
         self.defaultsettingsPush.setText(_translate("settingsWindow", "Save"))
         self.submitsettingsPush.setText(_translate("settingsWindow", "Submit"))
         self.plotting_disabled.clicked.connect(self.frame_2.hide)
@@ -383,15 +385,56 @@ class Ui_settingsWindow(object):
         self.comboBox.currentIndexChanged.connect(self.update_settings)
         self.set_default()
 
+
     def add_template(self):
         name_check = self.templateNameLineEdit.text()
         AllItems = [self.comboBox.itemText(i) for i in range(self.comboBox.count())]
         if not name_check:
-            print('error, empty')
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowIcon(QtGui.QIcon('Logo.svg'))
+            msgBox.setText("Please enter a name for the template.")
+            msgBox.setWindowTitle("Add Template")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
         elif name_check in AllItems:
-            print('already exists')
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowIcon(QtGui.QIcon('Logo.svg'))
+            msgBox.setText("This template already exists.")
+            msgBox.setWindowTitle("Add Template")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
         else:
             self.comboBox.addItem(name_check)
+            epoch_plot = [1]
+            self.settings.beginGroup(name_check)
+            self.settings.setValue('Epoch_plot', epoch_plot)
+            self.settings.setValue('Epoch_plot_list', epoch_plot)
+            self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
+            self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
+            self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
+            self.settings.setValue('Processing_Epoch', self.lineEditProcessEpoch.text())
+            self.settings.setValue('list1_increment', self.spinBox.value())
+            self.settings.setValue('list1_start', self.spinBox_2.value())
+            self.settings.setValue('list1_end', self.spinBox_3.value())
+            self.settings.setValue('list2_increment', self.spinBox_6.value())
+            self.settings.setValue('list2_start', self.spinBox_4.value())
+            self.settings.setValue('list2_end', self.spinBox_5.value())
+            self.settings.setValue('list3_increment', self.spinBox_9.value())
+            self.settings.setValue('list3_start', self.spinBox_7.value())
+            self.settings.setValue('list3_end', self.spinBox_8.value())
+            self.settings.setValue('list4_increment', self.spinBox_12.value())
+            self.settings.setValue('list4_start', self.spinBox_10.value())
+            self.settings.setValue('list4_end', self.spinBox_11.value())
+            self.settings.setValue('list5_increment', self.spinBox_15.value())
+            self.settings.setValue('list5_start', self.spinBox_13.value())
+            self.settings.setValue('list5_end', self.spinBox_14.value())
+            self.settings.endGroup()
+            index = self.comboBox.findText(name_check, QtCore.Qt.MatchFixedString)
+            if index >= 0:
+                self.comboBox.setCurrentIndex(index)
+            self.update_settings()
 
     def remove_template(self):
         name_check = self.templateNameLineEdit.text()
@@ -432,49 +475,108 @@ class Ui_settingsWindow(object):
             msgBox.setStandardButtons(QMessageBox.Ok)
             msgBox.exec()
 
-
     def submit_settings(self):
 
-        Ui_settingsWindow.noise_cutoff_mg = int(self.lineEditNoiseCutoff.text())
-        Ui_settingsWindow.processing_epoch = int(self.lineEditProcessEpoch.text())
+        settings_name = str(self.comboBox.currentText())
 
-        if self.plotting_enabled.isChecked():
-            epoch_plot = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
-            epoch_plot = list(filter(None, epoch_plot))
-            epoch_plot = ([int(x) for x in epoch_plot])
-        elif self.plotting_disabled.isChecked():
-            epoch_plot = []
 
-        Ui_settingsWindow.epoch_plot = epoch_plot
+        self.settings.beginGroup(settings_name)
 
-        Ui_settingsWindow.list1_increment = self.spinBox.value()
-        Ui_settingsWindow.list1_start = self.spinBox_2.value()
-        Ui_settingsWindow.list1_end = self.spinBox_3.value()
+        saved_dictionary = {
+            "Noise_Cutoff": self.settings.value('NoiseCutoff'),
+            "Process_Epoch": self.settings.value('Processing_Epoch'),
+            "Spinbox": self.settings.value('list1_increment'),
+            "Spinbox_2": self.settings.value('list1_start'),
+            "Spinbox_3": self.settings.value('list1_end'),
+            "Spinbox_4": self.settings.value('list2_start'),
+            "Spinbox_5": self.settings.value('list2_end'),
+            "Spinbox_6": self.settings.value('list2_increment'),
+            "Spinbox_7": self.settings.value('list3_start'),
+            "Spinbox_8": self.settings.value('list3_end'),
+            "Spinbox_9": self.settings.value('list3_increment'),
+            "Spinbox_10": self.settings.value('list4_start'),
+            "Spinbox_11": self.settings.value('list4_end'),
+            "Spinbox_12": self.settings.value('list4_increment'),
+            "Spinbox_13": self.settings.value('list5_start'),
+            "Spinbox_14": self.settings.value('list5_end'),
+            "Spinbox_15": self.settings.value('list5_increment')
+        }
 
-        Ui_settingsWindow.list2_increment = self.spinBox_6.value()
-        Ui_settingsWindow.list2_start = self.spinBox_4.value()
-        Ui_settingsWindow.list2_end = self.spinBox_5.value()
+        self.settings.endGroup()
 
-        Ui_settingsWindow.list3_increment = self.spinBox_9.value()
-        Ui_settingsWindow.list3_start = self.spinBox_7.value()
-        Ui_settingsWindow.list3_end = self.spinBox_8.value()
+        submit_dictionary = {
+            "Noise_Cutoff": self.lineEditNoiseCutoff.text(),
+            "Process_Epoch": self.lineEditProcessEpoch.text(),
+            "Spinbox": self.spinBox.value(),
+            "Spinbox_2": self.spinBox_2.value(),
+            "Spinbox_3": self.spinBox_3.value(),
+            "Spinbox_4": self.spinBox_4.value(),
+            "Spinbox_5": self.spinBox_5.value(),
+            "Spinbox_6": self.spinBox_6.value(),
+            "Spinbox_7": self.spinBox_7.value(),
+            "Spinbox_8": self.spinBox_8.value(),
+            "Spinbox_9": self.spinBox_9.value(),
+            "Spinbox_10": self.spinBox_10.value(),
+            "Spinbox_11": self.spinBox_11.value(),
+            "Spinbox_12": self.spinBox_12.value(),
+            "Spinbox_13": self.spinBox_13.value(),
+            "Spinbox_14": self.spinBox_14.value(),
+            "Spinbox_15": self.spinBox_15.value()
+        }
 
-        Ui_settingsWindow.list4_increment = self.spinBox_12.value()
-        Ui_settingsWindow.list4_start = self.spinBox_10.value()
-        Ui_settingsWindow.list4_end = self.spinBox_11.value()
 
-        Ui_settingsWindow.list5_increment = self.spinBox_15.value()
-        Ui_settingsWindow.list5_start = self.spinBox_13.value()
-        Ui_settingsWindow.list5_end = self.spinBox_14.value()
+        if submit_dictionary == saved_dictionary:
+            Ui_settingsWindow.noise_cutoff_mg = int(self.lineEditNoiseCutoff.text())
+            Ui_settingsWindow.processing_epoch = int(self.lineEditProcessEpoch.text())
 
-        Ui_settingsWindow._output = (Ui_settingsWindow.noise_cutoff_mg, Ui_settingsWindow.processing_epoch, Ui_settingsWindow.epoch_plot,
-                        Ui_settingsWindow.list1_increment, Ui_settingsWindow.list1_start, Ui_settingsWindow.list1_end,
-                        Ui_settingsWindow.list2_increment, Ui_settingsWindow.list2_start, Ui_settingsWindow.list2_end,
-                        Ui_settingsWindow.list3_increment, Ui_settingsWindow.list3_start, Ui_settingsWindow.list3_end,
-                        Ui_settingsWindow.list4_increment, Ui_settingsWindow.list4_start, Ui_settingsWindow.list4_end,
-                        Ui_settingsWindow.list5_increment, Ui_settingsWindow.list5_start, Ui_settingsWindow.list5_end)
+            if self.plotting_enabled.isChecked():
+                epoch_plot = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
+                epoch_plot = list(filter(None, epoch_plot))
+                epoch_plot = ([int(x) for x in epoch_plot])
+            elif self.plotting_disabled.isChecked():
+                epoch_plot = []
 
-        Ui_settingsWindow.template_name = str(self.comboBox.currentText())
+            Ui_settingsWindow.epoch_plot = epoch_plot
+
+            Ui_settingsWindow.list1_increment = self.spinBox.value()
+            Ui_settingsWindow.list1_start = self.spinBox_2.value()
+            Ui_settingsWindow.list1_end = self.spinBox_3.value()
+
+            Ui_settingsWindow.list2_increment = self.spinBox_6.value()
+            Ui_settingsWindow.list2_start = self.spinBox_4.value()
+            Ui_settingsWindow.list2_end = self.spinBox_5.value()
+
+            Ui_settingsWindow.list3_increment = self.spinBox_9.value()
+            Ui_settingsWindow.list3_start = self.spinBox_7.value()
+            Ui_settingsWindow.list3_end = self.spinBox_8.value()
+
+            Ui_settingsWindow.list4_increment = self.spinBox_12.value()
+            Ui_settingsWindow.list4_start = self.spinBox_10.value()
+            Ui_settingsWindow.list4_end = self.spinBox_11.value()
+
+            Ui_settingsWindow.list5_increment = self.spinBox_15.value()
+            Ui_settingsWindow.list5_start = self.spinBox_13.value()
+            Ui_settingsWindow.list5_end = self.spinBox_14.value()
+
+            Ui_settingsWindow._output = (Ui_settingsWindow.noise_cutoff_mg, Ui_settingsWindow.processing_epoch, Ui_settingsWindow.epoch_plot,
+                            Ui_settingsWindow.list1_increment, Ui_settingsWindow.list1_start, Ui_settingsWindow.list1_end,
+                            Ui_settingsWindow.list2_increment, Ui_settingsWindow.list2_start, Ui_settingsWindow.list2_end,
+                            Ui_settingsWindow.list3_increment, Ui_settingsWindow.list3_start, Ui_settingsWindow.list3_end,
+                            Ui_settingsWindow.list4_increment, Ui_settingsWindow.list4_start, Ui_settingsWindow.list4_end,
+                            Ui_settingsWindow.list5_increment, Ui_settingsWindow.list5_start, Ui_settingsWindow.list5_end)
+
+            Ui_settingsWindow.template_name = str(self.comboBox.currentText())
+            self.settings.setValue('Template', settings_name)
+            self.submit_settings_popup()
+        elif submit_dictionary != saved_dictionary:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowIcon(QtGui.QIcon('Logo.svg'))
+            msgBox.setText("The settings do not much those of the template. Please save the template and try again.")
+            msgBox.setWindowTitle("Wave")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
 
 
     def submit_settings_popup(self):
@@ -511,13 +613,20 @@ class Ui_settingsWindow(object):
 
         child_groups_exist = self.settings.childGroups()
 
+
         if 'Default' in child_groups_exist:
-            pass
+            name_check = 'Default'
+            index = self.comboBox.findText(name_check, QtCore.Qt.MatchFixedString)
+            if index >= 0:
+                self.comboBox.setCurrentIndex(index)
+            self.update_settings()
+            self.settings.setValue('Template', 'Default')
         else:
             settings_name = 'Default'
             epoch_plot = [1]
             self.settings.beginGroup(settings_name)
             self.settings.setValue('Epoch_plot', epoch_plot)
+            self.settings.setValue('Epoch_plot_list', epoch_plot)
             self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
             self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
             self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
@@ -538,59 +647,58 @@ class Ui_settingsWindow(object):
             self.settings.setValue('list5_start', self.spinBox_13.value())
             self.settings.setValue('list5_end', self.spinBox_14.value())
             self.settings.endGroup()
+            self.toggle_edit()
+            self.settings.setValue('Template', 'Default')
 
 
     def save_settings(self):
         ### Save the settings if the user accepts the settings dialog. ###
 
         settings_name = str(self.comboBox.currentText())
-        settings_default = 'Default'
-        if settings_name != settings_default:
-            if self.plotting_enabled.isChecked():
-                epoch_plot = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
-                epoch_plot = list(filter(None, epoch_plot))
-                epoch_plot = ([int(x) for x in epoch_plot])
-            elif self.plotting_disabled.isChecked():
-                epoch_plot = []
 
-            self.settings.beginGroup(settings_name)
-            self.settings.setValue('Epoch_plot', epoch_plot)
-            self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
-            self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
-            self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
-            self.settings.setValue('Processing_Epoch', self.lineEditProcessEpoch.text())
-            self.settings.setValue('list1_increment', self.spinBox.value())
-            self.settings.setValue('list1_start', self.spinBox_2.value())
-            self.settings.setValue('list1_end', self.spinBox_3.value())
-            self.settings.setValue('list2_increment', self.spinBox_6.value())
-            self.settings.setValue('list2_start', self.spinBox_4.value())
-            self.settings.setValue('list2_end', self.spinBox_5.value())
-            self.settings.setValue('list3_increment', self.spinBox_9.value())
-            self.settings.setValue('list3_start', self.spinBox_7.value())
-            self.settings.setValue('list3_end', self.spinBox_8.value())
-            self.settings.setValue('list4_increment', self.spinBox_12.value())
-            self.settings.setValue('list4_start', self.spinBox_10.value())
-            self.settings.setValue('list4_end', self.spinBox_11.value())
-            self.settings.setValue('list5_increment', self.spinBox_15.value())
-            self.settings.setValue('list5_start', self.spinBox_13.value())
-            self.settings.setValue('list5_end', self.spinBox_14.value())
-            self.settings.endGroup()
+        epoch_plot_list = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
+        epoch_plot_list = list(filter(None, epoch_plot_list))
+        epoch_plot_list = ([int(x) for x in epoch_plot_list])
 
-            msg = QMessageBox()
-            msg.setWindowTitle("Wave")
-            msg.setText("Settings: " + str(settings_name) + " has been saved.")
-            msg.setWindowIcon(QtGui.QIcon('Logo.svg'))
-            msg.setIcon(QMessageBox.Information)
-            msg.setStandardButtons(QMessageBox.Ok)
-            msg.exec_()
-        elif settings_name == settings_default:
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Warning)
-            msgBox.setWindowIcon(QtGui.QIcon('Logo.svg'))
-            msgBox.setText("You can't overwrite the Default settings template. Please add a new template.")
-            msgBox.setWindowTitle("Delete Settings Template")
-            msgBox.setStandardButtons(QMessageBox.Ok)
-            msgBox.exec()
+        if self.plotting_enabled.isChecked():
+            epoch_plot = [str(self.listWidget.item(i).text()) for i in range(self.listWidget.count())]
+            epoch_plot = list(filter(None, epoch_plot))
+            epoch_plot = ([int(x) for x in epoch_plot])
+        elif self.plotting_disabled.isChecked():
+            epoch_plot = []
+
+        self.settings.beginGroup(settings_name)
+        self.settings.setValue('Epoch_plot', epoch_plot)
+        self.settings.setValue('Epoch_plot_list', epoch_plot_list)
+        self.settings.setValue("Plotting_Enabled", self.plotting_enabled.isChecked())
+        self.settings.setValue("Plotting_Disabled", self.plotting_disabled.isChecked())
+        self.settings.setValue('NoiseCutoff', self.lineEditNoiseCutoff.text())
+        self.settings.setValue('Processing_Epoch', self.lineEditProcessEpoch.text())
+        self.settings.setValue('list1_increment', self.spinBox.value())
+        self.settings.setValue('list1_start', self.spinBox_2.value())
+        self.settings.setValue('list1_end', self.spinBox_3.value())
+        self.settings.setValue('list2_increment', self.spinBox_6.value())
+        self.settings.setValue('list2_start', self.spinBox_4.value())
+        self.settings.setValue('list2_end', self.spinBox_5.value())
+        self.settings.setValue('list3_increment', self.spinBox_9.value())
+        self.settings.setValue('list3_start', self.spinBox_7.value())
+        self.settings.setValue('list3_end', self.spinBox_8.value())
+        self.settings.setValue('list4_increment', self.spinBox_12.value())
+        self.settings.setValue('list4_start', self.spinBox_10.value())
+        self.settings.setValue('list4_end', self.spinBox_11.value())
+        self.settings.setValue('list5_increment', self.spinBox_15.value())
+        self.settings.setValue('list5_start', self.spinBox_13.value())
+        self.settings.setValue('list5_end', self.spinBox_14.value())
+        self.settings.endGroup()
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Wave")
+        msg.setText("Settings: " + str(settings_name) + " has been saved.")
+        msg.setWindowIcon(QtGui.QIcon('Logo.svg'))
+        msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
 
 
     def defining_settings(self):
@@ -601,6 +709,54 @@ class Ui_settingsWindow(object):
         #self.settings = QSettings()
         ### End ###
 
+    def toggle_edit(self):
+        settings_name = str(self.comboBox.currentText())
+        settings_default = 'Default'
+        if settings_name != settings_default:
+            self.spinBox.setEnabled(True)
+            self.spinBox_2.setEnabled(True)
+            self.spinBox_3.setEnabled(True)
+            self.spinBox_4.setEnabled(True)
+            self.spinBox_5.setEnabled(True)
+            self.spinBox_6.setEnabled(True)
+            self.spinBox_7.setEnabled(True)
+            self.spinBox_8.setEnabled(True)
+            self.spinBox_9.setEnabled(True)
+            self.spinBox_10.setEnabled(True)
+            self.spinBox_11.setEnabled(True)
+            self.spinBox_12.setEnabled(True)
+            self.spinBox_13.setEnabled(True)
+            self.spinBox_14.setEnabled(True)
+            self.spinBox_15.setEnabled(True)
+            self.plotting_enabled.setEnabled(True)
+            self.plotting_disabled.setEnabled(True)
+            self.lineEditNoiseCutoff.setEnabled(True)
+            self.lineEditProcessEpoch.setEnabled(True)
+            self.listWidget.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked)
+            self.defaultsettingsPush.setEnabled(True)
+        elif settings_name == settings_default:
+            self.spinBox.setDisabled(True)
+            self.spinBox_2.setDisabled(True)
+            self.spinBox_3.setDisabled(True)
+            self.spinBox_4.setDisabled(True)
+            self.spinBox_5.setDisabled(True)
+            self.spinBox_6.setDisabled(True)
+            self.spinBox_7.setDisabled(True)
+            self.spinBox_8.setDisabled(True)
+            self.spinBox_9.setDisabled(True)
+            self.spinBox_10.setDisabled(True)
+            self.spinBox_11.setDisabled(True)
+            self.spinBox_12.setDisabled(True)
+            self.spinBox_13.setDisabled(True)
+            self.spinBox_14.setDisabled(True)
+            self.spinBox_15.setDisabled(True)
+            self.plotting_enabled.setDisabled(True)
+            self.plotting_disabled.setDisabled(True)
+            self.listWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+            self.lineEditNoiseCutoff.setDisabled(True)
+            self.lineEditProcessEpoch.setDisabled(True)
+            self.defaultsettingsPush.setDisabled(True)
+
     def update_settings(self):
         settings_name = str(self.comboBox.currentText())
         child_groups_exist = self.settings.childGroups()
@@ -608,7 +764,7 @@ class Ui_settingsWindow(object):
         if settings_name in child_groups_exist:
             self.settings.beginGroup(settings_name)
             self.listWidget.clear()
-            self.listWidget.addItems(self.settings.value('Epoch_plot'))
+            self.listWidget.addItems(self.settings.value('Epoch_plot_list'))
             for index in range(self.listWidget.count()):
                 item = self.listWidget.item(index)
                 item.setFlags(QtCore.Qt.ItemIsEditable |
@@ -648,5 +804,6 @@ class Ui_settingsWindow(object):
                 self.plotting_enabled.setChecked(True)
                 self.frame_2.show()
             self.settings.endGroup()
+            self.toggle_edit()
         else:
             pass
