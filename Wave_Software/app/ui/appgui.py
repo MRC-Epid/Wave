@@ -22,6 +22,13 @@ import collections, re, copy
 import pandas as pd
 import os.path
 
+# Sets taskbar icon properly in Windows
+if sys.platform.startswith('win'):
+    import ctypes
+    # Make sure Pyinstaller icons are still grouped
+    if sys.argv[0].endswith('.exe') == False:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(u'CompanyName.ProductName.SubProduct.VersionInformation') # Arbitrary string
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
