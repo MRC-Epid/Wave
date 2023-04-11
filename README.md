@@ -3,15 +3,13 @@
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
 - [Resources](#resources)
-  * [Requirements](Requirements)
+  * [Requirements](https://github.com/MRC-Epid/Wave/wiki/Requirements)
   * [Releases](https://github.com/MRC-Epid/Wave/releases)
-  * [Setup](Setup)
+  * [Setup](https://github.com/MRC-Epid/Wave/wiki/Setup)
   * [User Guide](https://github.com/MRC-Epid/Wave/wiki/User-Guide/)
-  * [Example Files](Examples)
-  * [Videos](Videos)
+  * [Example Files]((https://github.com/MRC-Epid/Wave/wiki/Examples)
 - [Help & Community](#help---community)
-  * [Gitter](#gitter)
-  * [FAQ](#faq)
+  * [FAQ](https://github.com/MRC-Epid/Wave/wiki/FAQ)
 
 ## Introduction 
 
@@ -19,22 +17,21 @@ Wave is a Python library for the processing of waveform accelerometery data. Wav
 
 ## Getting Started
 
-Please ensure you meet the system requirements before continuing, these can be found on the [Requirements](Requirements) page. After you have checked your computer specifications against the system requirements, the quickest way of getting started with Wave is by downloading the latest executable on the [release](https://github.com/Cobine/Wave/releases) page. Several example files have been provided and can either be directly downloaded [here](https://github.com/Cobine/Wave/tree/main/Example_Files) or for further explanation of these files check the [Example Files](Examples) page. Please read the [Setup](Setup) and [User Guide](User-Guide) pages for guidance on installation, using the software, and processing files. For more specific queries, as well as technical support, please visit the Wave [discussion](https://github.com/MRC-Epid/Wave/discussions) page.   
+Please ensure you meet the system requirements before continuing, these can be found on the [Requirements](https://github.com/MRC-Epid/Wave/wiki/Requirements) page. After you have checked your computer specifications against the system requirements, the quickest way of getting started with Wave is by downloading the latest executable on the [release](https://github.com/Cobine/Wave/releases) page. Several example files have been provided and can either be directly downloaded [here](https://github.com/Cobine/Wave/tree/main/Example_Files) or for further explanation of these files check the [Example Files](https://github.com/MRC-Epid/Wave/wiki/Examples) page. Please read the [Setup](https://github.com/MRC-Epid/Wave/wiki/Setup) and [User Guide](https://github.com/MRC-Epid/Wave/wiki/User-Guide/) pages for guidance on installation, using the software, and processing files. For more specific queries, as well as technical support, please visit the Wave [discussion](https://github.com/MRC-Epid/Wave/discussions) page.   
    
 ## Resources
    
-- [Requirements](Requirements)
+- [Requirements](https://github.com/MRC-Epid/Wave/wiki/Requirements)
 - [Releases](https://github.com/MRC-Epid/Wave/releases)   
-- [Setup](Setup)
-- [User Guide](User-Guide)
-- [Example Files](Examples)
-- [Videos](Videos)
+-  [Setup](https://github.com/MRC-Epid/Wave/wiki/Setup)
+-  [User Guide](https://github.com/MRC-Epid/Wave/wiki/User-Guide/)
+-  [Example Files]((https://github.com/MRC-Epid/Wave/wiki/Examples)
 
 
 ## Help & Community 
 
 - [Discussions](https://github.com/MRC-Epid/Wave/discussions)
-- [FAQ](FAQ)
+- [FAQ]([FAQ](https://github.com/MRC-Epid/Wave/wiki/FAQ))
  
 
 
