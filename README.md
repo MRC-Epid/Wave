@@ -7,7 +7,7 @@
   * [Releases](https://github.com/MRC-Epid/Wave/releases)
   * [Setup](https://github.com/MRC-Epid/Wave/wiki/Setup)
   * [User Guide](https://github.com/MRC-Epid/Wave/wiki/User-Guide/)
-  * [Example Files]((https://github.com/MRC-Epid/Wave/wiki/Examples)
+  * [Example Files](https://github.com/MRC-Epid/Wave/wiki/Examples)
 - [Help & Community](#help---community)
   * [FAQ](https://github.com/MRC-Epid/Wave/wiki/FAQ)
 
