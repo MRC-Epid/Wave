@@ -31,7 +31,7 @@ Please ensure you meet the system requirements before continuing, these can be f
 ## Help & Community 
 
 - [Discussions](https://github.com/MRC-Epid/Wave/discussions)
-- [FAQ]([FAQ](https://github.com/MRC-Epid/Wave/wiki/FAQ))
+- [FAQ](https://github.com/MRC-Epid/Wave/wiki/FAQ)
  
 
 
